@@ -1,24 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment } from "react";
+import { Route, Routes } from "react-router-dom";
+import DefaultLayout from "./component/Layout/DefaultLayout/DefaultLayout";
+import { publicRoutes } from "./routes/routes";
+
+// react-bootstrap components
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+
+    <Routes>
+
+
+
+      {publicRoutes.map((route, index) => {
+
+        let Layout = route.layout || DefaultLayout;
+        if (route.layout === null) {
+          Layout = Fragment;
+
+        }
+
+
+        let LayoutMode = Fragment;
+
+        if (route.layoutMode) {
+          LayoutMode = route.layoutMode;
+
+        }
+
+
+
+        return (
+
+
+
+
+          <Route key={index} path={route.path}
+            element={<LayoutMode><Layout><route.element></route.element></Layout></LayoutMode>} />
+
+
+
+        )
+
+      })}
+
+
+      {/* <Route path="users/*" element={<Users />} /> */}
+    </Routes>
   );
 }
 
