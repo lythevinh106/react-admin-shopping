@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import DefaultLayout from "./component/Layout/DefaultLayout/DefaultLayout";
 import { publicRoutes } from "./routes/routes";
 
-// react-bootstrap components
+
 
 
 function App() {

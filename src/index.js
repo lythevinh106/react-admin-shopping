@@ -9,7 +9,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { purple } from '@mui/material/colors';
 import { customTheme } from './component/CreateTheme';
-
+import { SnackbarProvider, useSnackbar } from 'notistack';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -19,8 +19,9 @@ root.render(
       <BrowserRouter>
         <ThemeProvider theme={customTheme}>
           <CssBaseline />
-
-          <App />
+          <SnackbarProvider maxSnack={3}>
+            <App />
+          </SnackbarProvider>
         </ThemeProvider>
       </BrowserRouter>
     </GlobalStyles>
