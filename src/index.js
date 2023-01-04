@@ -10,22 +10,51 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { purple } from '@mui/material/colors';
 import { customTheme } from './component/CreateTheme';
 import { SnackbarProvider, useSnackbar } from 'notistack';
+import { store } from './app/store'
+import { Provider } from 'react-redux'
+import ProductProvider from './context/ProductProvider';
+import CategoryProvider from './context/CategoryProvider';
+
+
+
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+
 root.render(
-  <React.StrictMode>
-    <GlobalStyles>
-      <BrowserRouter>
-        <ThemeProvider theme={customTheme}>
-          <CssBaseline />
-          <SnackbarProvider maxSnack={3}>
-            <App />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </GlobalStyles>
-  </React.StrictMode >
+  // <React.StrictMode>
+  <GlobalStyles>
+    <BrowserRouter>
+      <Provider store={store}>
+
+
+
+        <SnackbarProvider maxSnack={3}>
+          <CategoryProvider>
+            <ProductProvider>
+
+
+
+              <ThemeProvider theme={customTheme}>
+                <CssBaseline />
+
+
+                <App />
+
+
+              </ThemeProvider>
+
+            </ProductProvider >
+          </CategoryProvider>
+        </SnackbarProvider>
+
+
+
+      </Provider>
+    </BrowserRouter>
+  </GlobalStyles >
+  // </React.StrictMode >
 );
 
 // If you want to start measuring performance in your app, pass a function

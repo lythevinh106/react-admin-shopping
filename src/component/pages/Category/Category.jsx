@@ -1,30 +1,35 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import "./style.scss"
+
 import { Box, Button, Pagination } from '@mui/material';
 import { TypoTitleContent } from '../../CustomTypo/CustomTypo';
 
 
 import ProductTable from '../../ProductTable/ProductTable';
-import ProductProvider, { ProductContext } from '../../../context/ProductProvider';
+
 import PaginationTable from '../../PaginationTable/PaginationTable';
 import InputSearch from '../../InputSearch/InputSearch';
 import { Filter } from '@mui/icons-material';
 import FilterSelect from '../../FilterSelect/FilterSelect';
 import myColor from '../../myColor/myColor';
 import { ButtonAddNew } from '../../CustomButton/CustomButton';
-
-Product.propTypes = {
-
-};
+import { CategoryContext } from '../../../context/CategoryProvider';
 
 
 
 
-function Product(props) {
 
-    const { products, isDrawer, setIsDrawer, setProductUpdate
-    } = useContext(ProductContext);
+
+function Category(props) {
+
+    const {
+        categories,
+        filter,
+        totalPage,
+        handleChangePage,
+        handleSortChange,
+        handleSearch
+    } = useContext(CategoryContext);
 
     return (
 
@@ -50,12 +55,12 @@ function Product(props) {
                 >
 
 
-                    {/* <Box>
-                        <ButtonAddNew onClick={() => {
+                    <Box>
+                        {/* <ButtonAddNew onClick={() => {
                             setIsDrawer(true)
                             setProductUpdate(null)
-                        }}> Thêm Sản Phẩm </ButtonAddNew>
-                    </Box> */}
+                        }}> Thêm Sản Phẩm </ButtonAddNew> */}
+                    </Box>
 
 
 
@@ -72,24 +77,25 @@ function Product(props) {
 
 
                     <Box>
-                        <InputSearch />
+                        <InputSearch onChange={handleSearch} />
                     </Box>
                     <Box sx={{ width: "200px" }}>
-                        <FilterSelect />
+                        <FilterSelect onSortChange={handleSortChange} />
                     </Box>
 
 
                 </Box>
                 <Box mt="20px">
-                    <ProductTable type="product" data={products} cols={
+                    <ProductTable type="category" data={categories} cols={
 
                         [
-                            { title: "Tên Sản Phẩm", field: "name" },
-                            { title: "Giá Cũ", field: "oldPrice" },
-                            { title: "Gía Mới", field: "salePrice" },
+                            { title: "Tên danh mục", field: "name" },
+                            { title: "Slug", field: "slug" },
+
 
                         ]
                     } />
+
                 </Box>
 
 
@@ -108,6 +114,11 @@ function Product(props) {
 
 
                 }}
+
+                    count={totalPage}
+                    page={filter.page}
+
+                    onChange={handleChangePage}
                 />
 
             </Box>
@@ -122,4 +133,4 @@ function Product(props) {
     );
 }
 
-export default Product;
+export default Category;

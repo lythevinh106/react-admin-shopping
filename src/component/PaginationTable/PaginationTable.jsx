@@ -6,7 +6,7 @@ PaginationTable.propTypes = {
 
 };
 
-function PaginationTable({ sx = {} }) {
+function PaginationTable({ sx = {}, count, page, onChange = () => { } }) {
     return (
         <>
             <Pagination
@@ -23,10 +23,10 @@ function PaginationTable({ sx = {} }) {
 
 
                 spacing={2}
-                count={10}
-                page={2}
+                count={count}
+                page={page}
                 color="primary"
-            // onChange={handleChange} 
+                onChange={onChange}
 
             />
         </>

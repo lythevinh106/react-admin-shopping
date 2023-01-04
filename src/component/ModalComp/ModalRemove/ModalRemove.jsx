@@ -1,28 +1,13 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import { ProductContext } from '../../../context/ProductProvider';
 import { Button, Typography } from '@mui/material';
 import myColor from '../../myColor/myColor';
-
-ModalRemoveProduct.propTypes = {
+ModalRemove.propTypes = {
 
 };
 
-function ModalRemoveProduct() {
+function ModalRemove({ onYEsRemove, onNoRemove }) {
 
-    const { handleOnYesRemove,
-        handleOnNoRemove, isOpenRemove } = useContext(ProductContext);
-
-    const onYEsRemove = () => {
-
-        // console.log(isOpenRemove);
-        if (isOpenRemove == false) return;
-        handleOnYesRemove(isOpenRemove)
-    }
-
-    const onNoRemove = () => {
-        // handleOnNoRemove()
-    }
 
     return (
         <>
@@ -36,13 +21,13 @@ function ModalRemoveProduct() {
             </Typography>
             <Typography id="modal-modal-description" sx={{ mt: 5, display: "flex", justifyContent: "space-around" }} >
                 <Button variant='contained' color="error"
-                    onClick={() => { onYEsRemove() }}
+                    onClick={onYEsRemove}
                 >Đồng Ý</Button>
 
-                <Button onClick={() => { onNoRemove() }} variant='contained'>Thoát</Button>
+                <Button onClick={onNoRemove} variant='contained'>Thoát</Button>
             </Typography>
         </>
     );
 }
 
-export default ModalRemoveProduct;
+export default ModalRemove;

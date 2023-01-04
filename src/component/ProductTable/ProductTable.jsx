@@ -9,31 +9,24 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Box } from '@mui/material';
 import myColor from '../myColor/myColor';
-import { ProductContext } from '../../context/ProductProvider';
+
+
 import TableItem from './TableItem/TableItem';
+import ProductTableItem from './ProductTableItem/ProductTableItem';
+import CategoryTableItem from './CategoryTableItem/CategoryTableItem';
 
 
 
 
-// function createData(col]) {
 
-//     return { name, calories, fat, carbs, protein };
-// }
-
-// const rows = [
-//     createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-//     createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-//     createData('Eclair', 262, 16.0, 24, 6.0),
-//     createData('Cupcake', 305, 3.7, 67, 4.3),
-//     createData('Gingerbread', 356, 16.0, 49, 3.9),
-// ];
-
-
-function ProductTable({ data }) {
+function ProductTable({ data, cols, type = "product" }) {
+    // console.log(data);
     // console.log(cols);
     return (
         <Paper elevation={8}  >
-            <TableContainer component={Paper}>
+
+
+            <TableContainer component={Paper} sx={{ minHeight: "400px" }}>
                 <Table sx={{}} aria-label="simple table">
                     <TableHead >
                         <TableRow >
@@ -43,29 +36,21 @@ function ProductTable({ data }) {
                                 color: myColor.greenSecond
                             }} align="center">STT</TableCell>
 
+                            {cols.map((col, i) => {
+                                return (
+                                    <TableCell key={i} sx={{
+                                        fontWeight: "bold",
+                                        fontSize: "18px",
+                                        color: myColor.greenSecond
+                                    }} align="center">{col.title}</TableCell>)
+                            })}
 
                             <TableCell sx={{
                                 fontWeight: "bold",
                                 fontSize: "18px",
                                 color: myColor.greenSecond
-                            }} align="center">Tên</TableCell>
+                            }} align="center">STT</TableCell>
 
-                            <TableCell sx={{
-                                fontWeight: "bold",
-                                fontSize: "18px",
-                                color: myColor.greenSecond
-                            }} align="center">Giá Cũ</TableCell>
-                            <TableCell sx={{
-                                fontWeight: "bold",
-                                fontSize: "18px",
-                                color: myColor.greenSecond
-                            }} align="center">Giá Mới</TableCell>
-
-                            <TableCell sx={{
-                                fontWeight: "bold",
-                                fontSize: "18px",
-                                color: myColor.greenSecond
-                            }} align="center">Hành Động</TableCell>
 
 
 
@@ -74,12 +59,32 @@ function ProductTable({ data }) {
 
                     <TableBody>
 
+                        {data.map((item, i) => {
 
-                        {data.map((row, index) => {
+                            // console.log(Object.keys(item))
+                            switch (type) {
+                                case "product": {
+
+                                    return (
+                                        <ProductTableItem key={item.id} item={item} count={i} cols={cols} />)
+
+                                }
+                                case "category": {
+                                    return (
+                                        <CategoryTableItem key={item.id} item={item} count={i} cols={cols} />)
+
+                                }
+                                default: {
+                                    // do something
+                                }
+                            }
 
 
-                            return (<TableItem row={row} key={row.id} count={index} />)
+
+
                         })}
+
+
 
 
 
@@ -91,6 +96,7 @@ function ProductTable({ data }) {
 
                 </Table>
             </TableContainer>
+
         </Paper >
     );
 }

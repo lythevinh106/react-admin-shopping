@@ -6,10 +6,14 @@ InputSearch.propTypes = {
 
 };
 
-function InputSearch(props) {
+function InputSearch({ onChange = () => { } }) {
+
+
     return (
         <>
-            <TextField size='small' label={<SearchIcon sx={{
+            <TextField onChange={(e) => {
+                onChange(e)
+            }} size='small' label={<SearchIcon sx={{
                 backgroundColor: "transparent"
             }} />}></TextField>
         </>

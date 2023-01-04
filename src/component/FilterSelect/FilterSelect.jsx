@@ -9,11 +9,23 @@ FilterSelect.propTypes = {
 
 };
 
-function FilterSelect(props) {
-    const [age, setAge] = React.useState('');
+const listSort = [
+    {
+        name: "Mới Tới Cũ",
+        value: "asc"
+    },
+    {
+        name: "Cũ Tới Mới",
+        value: "desc"
+    },
+]
+
+function FilterSelect({ onSortChange = () => { } }) {
+    const [sortCategory, setSortCategory] = React.useState("desc");
 
     const handleChange = (event) => {
-        setAge(event.target.value);
+        setSortCategory(event.target.value);
+        onSortChange(sortCategory)
     };
 
     return (
@@ -23,13 +35,16 @@ function FilterSelect(props) {
                 <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
+                    value={sortCategory}
                     label="Lọc Theo"
                     onChange={handleChange}
                 >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    {listSort.map((sort, index) => {
+
+                        return (<MenuItem key={index} value={sort.value}>{sort.name}</MenuItem>)
+                    })}
+
+
                 </Select>
             </FormControl>
         </Box>

@@ -6,54 +6,27 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Button from '@mui/material/Button';
 import myColor from '../../myColor/myColor';
-import { ProductContext } from '../../../context/ProductProvider';
+
+import { MyButtonRemove, MyButtonSetting } from '../../CustomButton/CustomButton';
+
 
 
 TableItem.propTypes = {
 
 };
 
-export const MyButtonRemove = styled(Button)({
+function TableItem({ item, count, cols, SettingClick = () => { }, RemoveClick = () => { } }) {
 
-    color: "white",
-    height: "48px",
-    backgroundColor: "#DC3545",
-
-    "&:hover": {
-        backgroundColor: "#DC3523"
-    }
-
-
-})
-
-
-
-
-export const MyButtonSetting = styled(Button)({
-
-    color: "white",
-    height: "48px",
-    backgroundColor: "#28A745",
-
-    "&:hover": {
-        backgroundColor: myColor.greenDefault
-    }
-
-
-})
-
-function TableItem({ row, count }) {
-
-
-    const { deleteProduct, updateProduct } = useContext(ProductContext);
-
+    // const { deleteCategory, updateCategory } = useContext(CategoryContext);
 
     const handleSettingClick = (id) => {
-        updateProduct(id)
+        SettingClick(id);
     }
 
     const handleRemoveClick = (id) => {
-        deleteProduct(id)
+
+        RemoveClick(id);
+
     }
 
 
@@ -69,19 +42,33 @@ function TableItem({ row, count }) {
                 <TableCell align="center" component="th" scope="row">
                     {count + 1}
                 </TableCell>
-                <TableCell align="center" component="th" scope="row">
-                    {row.name}
-                </TableCell>
-                <TableCell align="center">{row.oldPrice}</TableCell>
-                <TableCell align="center">{row.salePrice}</TableCell>
+                {cols.map((col, i) => {
+
+                    if (Object.keys(item).includes(col.field)) {
+
+                        return (
+
+
+                            <TableCell key={i} align="center" component="th" scope="row" >
+                                <>
+                                    {item[col.field]}
+                                </>
+                            </TableCell>
+
+                        )
+
+
+                    }
+                })}
+
                 <TableCell align="center" sx={{
 
                 }}>
 
-                    <MyButtonSetting sx={{ marginRight: "5px" }} onClick={() => handleSettingClick(row.id)}>
+                    <MyButtonSetting sx={{ marginRight: "5px" }} onClick={() => handleSettingClick(item.id)}>
                         <SettingsIcon />
                     </MyButtonSetting>
-                    <MyButtonRemove sx={{ marginLeft: "5px" }} onClick={() => handleRemoveClick(row.id)}>
+                    <MyButtonRemove sx={{ marginLeft: "5px" }} onClick={() => handleRemoveClick(item.id)}>
                         <DeleteForeverIcon />
                     </MyButtonRemove>
 

@@ -5,16 +5,23 @@ import PropTypes from 'prop-types';
 
 import { useSnackbar } from 'notistack';
 import ModalMain from '../component/ModalComp/ModalMain';
-import ModalRemoveProduct from './../component/ModalComp/ModalRemoveProduct/ModalRemoveProduct';
+
+
+import DrawerMain from '../component/DrawerComp/DrawerMain';
+import ModalRemove from '../component/ModalComp/ModalRemove/ModalRemove';
 import DrawerCreate from '../component/DrawerComp/DrawerCreate/DrawerCreate';
+import DrawerMainProduct from '../component/DrawerComp/DrawerMainProduct';
+
+import { useDispatch } from 'react-redux';
+
+import { activeMenu } from '../features/progress/progressSlice';
+import FormCreateProduct from '../component/Form/FormCreateProduct/FormCreateProduct';
 
 ProductProvider.propTypes = {
 
 };
 
 export const ProductContext = createContext();
-
-
 
 
 export default function ProductProvider({ children }) {
@@ -57,17 +64,16 @@ export default function ProductProvider({ children }) {
 
     ]
 
-
-
     const [isOpenRemove, setIsOpenRemove] = useState(false);
     const [isAlert, setIsAlert] = useState(false);
     const [products, setProducts] = useState(Listproducts);
+    const [isDrawer, setIsDrawer] = useState(false);
+    const [productUpdate, setProductUpdate] = useState();
 
 
-    // const handleOpen = () => setOpen(true);
-    // const handleClose = () => setOpen(false);
+
     const { enqueueSnackbar } = useSnackbar();
-
+    const dispatch = useDispatch();
 
 
     const deleteProduct = (id) => {
@@ -77,7 +83,17 @@ export default function ProductProvider({ children }) {
     const updateProduct = (id) => {
 
 
+        setIsDrawer(true);
+
+        const data = products.find((item) => {
+            return item.id === id;
+        })
+
+        setProductUpdate(data)
+
+
     }
+    // console.log(isDrawer)
 
 
 
@@ -91,10 +107,11 @@ export default function ProductProvider({ children }) {
         setProducts(newItems);
         setIsOpenRemove(false);
 
-        enqueueSnackbar('I love snacks.', { variant: "success" });
+        enqueueSnackbar('Xóa Sản Phẩm Thành Công', { variant: "success" });
     }
 
     const handleOnNoRemove = () => {
+
         setIsOpenRemove(false);
     }
 
@@ -103,33 +120,46 @@ export default function ProductProvider({ children }) {
         setIsAlert(false);
     }
 
+    const handleOnSubmit = (data) => {
+
+        dispatch(activeMenu(true));
+        ////doan nay nen gui len provider cua  tuwngf loai
+        setTimeout(() => {
+            console.log(data)
+            dispatch(activeMenu(false));
+
+        }, 3000)
+
+    }
+
 
     return (
-        <ProductContext.Provider value={{ products, deleteProduct, updateProduct, isOpenRemove, handleOnYesRemove }}>
+        <ProductContext.Provider value={{
+            products,
+            deleteProduct,
+            updateProduct,
+            isOpenRemove,
+            isDrawer,
+            setIsDrawer,
+            productUpdate,
+            setProductUpdate
+
+
+        }}>
             {children}
-
             {isOpenRemove !== false ? <ModalMain
-
-
-
-                component={<ModalRemoveProduct />}
+                component={<ModalRemove onYEsRemove={() => handleOnYesRemove(isOpenRemove)}
+                    onNoRemove={handleOnNoRemove}
+                />}
                 oncloseRemoveBtn={() => {
-
                     setIsOpenRemove(false)
-
-
                 }} /> : <></>
             }
-
-
-
-            <DrawerCreate />
-
-
-
-
-
-
+            <DrawerMainProduct
+                component={<DrawerCreate component={<FormCreateProduct
+                    productUpdate={productUpdate}
+                    onSubmit={handleOnSubmit} />} />}
+            />
 
 
 
