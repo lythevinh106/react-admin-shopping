@@ -16,8 +16,11 @@ import DrawerMainCategory from '../component/DrawerComp/DrawerMainCategory';
 import FormCreateCategory from '../component/Form/FormCreateCategory/FormCreateCategory';
 import axios from 'axios';
 import CategoryApi from '../ApiServices/CategoryApi';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import queryString from 'query-string';
+import { Category } from '@mui/icons-material';
+import FormUpdateCategory from '../component/Form/FormUpdateCategory/FormUpdateCategory';
+
 
 
 
@@ -28,24 +31,25 @@ export const CategoryContext = createContext();
 
 export default function CategoryProvider({ children }) {
 
-
+    const navigate = useNavigate();
     let [searchParamsCategory, setSearchParamsCategory] = useSearchParams();
     let location = useLocation();
 
     const [categories, setCategories] = useState([]);
 
-
     const queryParam = queryString.parse(location.search)
-    const [query, setQuery] = useState({})
-    // console.log(queryParam);
     const [filter, setFilter] = useState({
-        page: 1,
-        limit: 5,
+
+
+
         ...queryParam,
+        page: parseInt(queryParam.page) || 1
+
+
+
     })
 
-    // console.log("filter", filter);
-    // console.log("query", query);
+
 
     const [totalPage, setTotalPage] = useState(0);
 
@@ -53,7 +57,7 @@ export default function CategoryProvider({ children }) {
     const [isAlert, setIsAlert] = useState(false);
 
     const [isDrawer, setIsDrawer] = useState(false);
-    const [categoryUpdate, setCategoryUpdate] = useState();
+    const [categoryUpdate, setCategoryUpdate] = useState(null);
     const { enqueueSnackbar } = useSnackbar();
 
 
@@ -76,38 +80,30 @@ export default function CategoryProvider({ children }) {
 
 
 
-    }, [filter, query])
+    }, [filter])
+
+
+
 
     useEffect(() => {
 
-        // setFilter((prev) => {
-        //     return {
-        //         ...prev,
-        //         ...query
-        //     }
-        // })
+        navigate(location.pathname + "?" + queryString.stringify(filter));
 
-        setSearchParamsCategory({
-            ...query
-        })
+    }, [navigate, filter])
 
 
-    }, [query])
+
+    useEffect(() => {
+        if (isDrawer == true) {
+            setCategoryUpdate(null);
+        }
 
 
+    }, [isDrawer])
 
 
 
     const handleChangePage = (e, newPage) => {
-        // console.log(newPage);
-        // console.log(allParam);
-        setQuery((prev) => {
-            return {
-                ...prev,
-                page: newPage
-
-            }
-        })
 
 
         setFilter((prev) => {
@@ -121,15 +117,7 @@ export default function CategoryProvider({ children }) {
     }
 
     const handleSortChange = (value) => {
-        console.log(value);
 
-        setQuery((prev) => {
-            return {
-                ...prev,
-                sort: value
-
-            }
-        })
         setFilter((prev) => {
             return {
                 ...prev,
@@ -144,15 +132,8 @@ export default function CategoryProvider({ children }) {
 
 
     const handleSearch = (e) => {
-        // console.log(e.target.value);
-        let length = e.target.value.trim().length;
-        setQuery((prev) => {
 
-            return {
-                ...prev,
-                search: e.target.value
-            }
-        })
+        let length = e.target.value.trim().length;
 
 
         setFilter((prev) => {
@@ -162,27 +143,7 @@ export default function CategoryProvider({ children }) {
                 search: e.target.value,
             }
         })
-        // if (e.target.value.trim() != "" && length > 0) {
 
-        //     setQuery((prev) => {
-        //         return {
-        //             ...prev,
-        //             search: e.target.value,
-        //         }
-        //     })
-        // }
-        // else {
-        //     console.log("bang 0")
-        //     setQuery((prev) => {
-        //         delete prev.search;
-        //         return {
-        //             ...prev,
-
-
-
-        //         }
-        //     })
-        // }
 
     }
 
@@ -193,15 +154,20 @@ export default function CategoryProvider({ children }) {
     }
     const updateCategory = (id) => {
 
-        console.log("category", id)
 
         setIsDrawer(true);
 
-        const data = categories.find((item) => {
-            return item.id === id;
-        })
+        (async () => {
+            try {
+                const response = await CategoryApi.showCategory(id)
+                // console.log(response.data);
+                // setCategory(response.data);
+                setCategoryUpdate(response.data)
 
-        setCategoryUpdate(data)
+            } catch (error) {
+
+            }
+        })();
 
 
 
@@ -212,24 +178,24 @@ export default function CategoryProvider({ children }) {
     const handleOnYesRemove = async (id) => {
 
 
-        // console.log(newItems);
+
 
         try {
-            const response = await CategoryApi.deleteCategory(id)
-            // const ItemRemove = categories.findIndex((category) => category.id === id);
-            // let newItems = [...categories];
 
-            // newItems.splice(ItemRemove, 1);
-            setFilter(filter);
+            const ItemRemove = categories.findIndex((category) => category.id === id);
+            let newItems = [...categories];
+            newItems.splice(ItemRemove, 1);
+            setCategories(newItems);
             setIsOpenRemove(false);
-
+            enqueueSnackbar('Xóa danh mục thành công.', { variant: "success" });
+            const response = await CategoryApi.deleteCategory(id)
         } catch (error) {
             enqueueSnackbar('Xóa danh mục thất bại.', { variant: "error" });
         }
 
 
 
-        enqueueSnackbar('Xóa danh mục thành công.', { variant: "success" });
+
     }
 
     const handleOnNoRemove = () => {
@@ -242,7 +208,73 @@ export default function CategoryProvider({ children }) {
         setIsAlert(false);
     }
 
-    const handleOnSubmit = () => {
+    const handleOnSubmitCreate = async (data, idUpdate = -1) => {
+
+
+
+        console.log("data create", data);
+
+        try {
+            const newData = {
+                name: data.name,
+                slug: data.slug,
+                active: data.active,
+            }
+
+            const newCategories = [...categories];
+            newCategories.unshift(newData);
+            setCategories(newCategories);
+            const response = await CategoryApi.addCategory(newData)
+
+            enqueueSnackbar('Thêm Danh Mục Thành Công.', { variant: "success" });
+        } catch (error) {
+            enqueueSnackbar('Thêm Danh Mục Thất Bại.', { variant: "error" });
+
+        }
+
+
+    }
+
+    const handleOnSubmitUpdate = async (data) => {
+
+
+
+        console.log("update category", data.id);
+
+        try {
+            const newData = {
+                name: data.name,
+                slug: data.slug,
+
+            }
+
+            const findCategoryId = categories.findIndex((category) => category.id == data.id);
+
+            categories[findCategoryId] = {
+                ...categories[findCategoryId],
+                ...newData
+            }
+
+
+            // setCategories((prev) => {
+
+
+            //     return [
+            //         ...prev,
+            //         prev[findCategoryId] = {
+            //             ...categories[findCategoryId],
+            //             ...newData
+            //         }
+            //     ]
+            // });
+            const response = await CategoryApi.updateCategory(data.id, data)
+
+            enqueueSnackbar('Sửa Danh Mục Thành Công.', { variant: "success" });
+        } catch (error) {
+            enqueueSnackbar('Sủa Danh Mục Thất Bại.', { variant: "error" });
+
+        }
+
 
     }
 
@@ -262,7 +294,8 @@ export default function CategoryProvider({ children }) {
             totalPage,
             handleChangePage,
             handleSortChange,
-            handleSearch
+            handleSearch,
+            categoryUpdate, setCategoryUpdate
 
 
         }}>
@@ -279,9 +312,26 @@ export default function CategoryProvider({ children }) {
             }
 
             <DrawerMainCategory
-                component={<DrawerCreate component={<FormCreateCategory
-                    // productUpdate={ }
-                    onSubmit={handleOnSubmit} />} />}
+                component={<DrawerCreate component={
+
+                    categoryUpdate == null ?
+                        <FormCreateCategory
+
+                            onSubmitCreate={handleOnSubmitCreate} />
+                        : <FormUpdateCategory
+                            categoryUpdate={categoryUpdate}
+
+                            onSubmitUpdate={handleOnSubmitUpdate} />
+
+
+
+
+
+                }
+
+
+
+                />}
             />
 
 

@@ -13,25 +13,32 @@ import * as yup from "yup";
 import { object, string, number, date, InferType, ref } from 'yup';
 import InputField from '../InputField/InputField';
 import { ProductContext } from '../../../context/ProductProvider';
-import Category from '../../pages/Category/Category';
-import CategoryApi from '../../../ApiServices/CategoryApi';
-import { CategoryContext } from '../../../context/CategoryProvider';
+
 
 
 const schema = yup.object({
     name: string().required("trường này không được bỏ trống").min(3, `Tối thiểu Có 3 kí tự`),
     slug: string().required("trường này không được bỏ trống").min(3, `Tối thiểu Có 3 kí tự`)
 
-
-
-
-
-
 }).required();
 
 
+function FormUpdateCategory({ categoryUpdate, onSubmitUpdate = () => { } }) {
 
-function FormCreateCategory({ onSubmitCreate }) {
+
+    const [category, setCategory] = React.useState(categoryUpdate);
+
+
+
+
+    useEffect(() => {
+
+
+        setCategory(categoryUpdate);
+
+
+    }, [categoryUpdate])
+
 
 
 
@@ -42,8 +49,12 @@ function FormCreateCategory({ onSubmitCreate }) {
         defaultValues:
         {
 
-            name: " ",
-            slug: "",
+            name: categoryUpdate.name,
+            slug: categoryUpdate.slug,
+            id: categoryUpdate.id
+
+
+
 
         }
     });;
@@ -51,24 +62,22 @@ function FormCreateCategory({ onSubmitCreate }) {
     const { register, handleSubmit, watch, formState: { errors } } = form
 
     // console.log(errors)
-    const handleOnSubmit = async data => {
 
-        onSubmitCreate(data);
-        form.resetField('name');
-        form.resetField('slug');
-
-
+    const handleOnSubmit = data => {
+        onSubmitUpdate(data);
     };
 
-    return (
 
+
+
+    return (
         <form onSubmit={handleSubmit(handleOnSubmit)}>
             <Box sx={{
 
 
             }}>
                 <Typography variant='h5' sx={{ color: myColor.greenDefault, padding: "5px 0px ", fontWeight: "bold", textAlign: "center", margin: "10px 0" }}>
-                    Thêm Mới Danh Mục
+                    Cập Nhật Danh Mục
                 </Typography>
 
                 <Box sx={{
@@ -88,13 +97,16 @@ function FormCreateCategory({ onSubmitCreate }) {
 
 
 
+
+
+
                     <Box mt="15px" textAlign="center"><Button type='submit' fullWidth variant="contained" sx={{
                         backgroundColor: myColor.greenDefault,
                         "&:hover": {
                             backgroundColor: myColor.greenDefault,
                         }
                     }} >
-                        Tạo Danh Mục
+                        Sửa Danh Mục
 
 
                     </Button></Box>
@@ -108,4 +120,4 @@ function FormCreateCategory({ onSubmitCreate }) {
     );
 }
 
-export default FormCreateCategory;
+export default FormUpdateCategory;

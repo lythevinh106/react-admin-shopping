@@ -20,6 +20,7 @@ import { CategoryContext } from '../../../context/CategoryProvider';
 
 
 
+
 function Category(props) {
 
     const {
@@ -28,12 +29,15 @@ function Category(props) {
         totalPage,
         handleChangePage,
         handleSortChange,
-        handleSearch
+        handleSearch,
+        setIsDrawer,
+        categoryUpdate,
+        setCategoryUpdate
     } = useContext(CategoryContext);
 
     return (
 
-        // <ProductProvider>
+
         <Box className="dashboard-wrapper" >
 
 
@@ -56,10 +60,10 @@ function Category(props) {
 
 
                     <Box>
-                        {/* <ButtonAddNew onClick={() => {
+                        <ButtonAddNew onClick={() => {
                             setIsDrawer(true)
-                            setProductUpdate(null)
-                        }}> Thêm Sản Phẩm </ButtonAddNew> */}
+                            setCategoryUpdate(null)
+                        }}> Thêm Danh Mục </ButtonAddNew>
                     </Box>
 
 
@@ -128,7 +132,7 @@ function Category(props) {
 
 
         </Box>
-        // </ProductProvider >
+
 
     );
 }

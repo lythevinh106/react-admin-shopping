@@ -29,6 +29,34 @@ const CategoryApi = {
 
     },
 
+    addCategory(data) {
+
+        return AxiosAdmin.post(`/category`, data);
+
+
+
+
+
+    },
+    updateCategory(id, data) {
+
+        return AxiosAdmin.post(`/category/edit/${id}`, data);
+
+
+
+
+
+    },
+    showCategory(id) {
+
+        return AxiosAdmin.get(`/category/${id}`);
+
+
+
+
+
+    },
+
     // getProduct(productId) {
 
     //     return AxiosClient.get(`/products/${productId}`);

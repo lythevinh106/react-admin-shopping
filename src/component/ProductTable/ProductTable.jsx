@@ -49,7 +49,7 @@ function ProductTable({ data, cols, type = "product" }) {
                                 fontWeight: "bold",
                                 fontSize: "18px",
                                 color: myColor.greenSecond
-                            }} align="center">STT</TableCell>
+                            }} align="center">Hành Động</TableCell>
 
 
 

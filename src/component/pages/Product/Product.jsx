@@ -23,7 +23,12 @@ Product.propTypes = {
 
 function Product(props) {
 
-    const { products, isDrawer, setIsDrawer, setProductUpdate
+    const { products, filter,
+        totalPage,
+        handleChangePage,
+        handleSortChange,
+        handleSearch
+        , setProductUpdate, setIsDrawer
     } = useContext(ProductContext);
 
     return (
@@ -50,12 +55,12 @@ function Product(props) {
                 >
 
 
-                    {/* <Box>
+                    <Box>
                         <ButtonAddNew onClick={() => {
                             setIsDrawer(true)
                             setProductUpdate(null)
                         }}> Thêm Sản Phẩm </ButtonAddNew>
-                    </Box> */}
+                    </Box>
 
 
 
@@ -72,11 +77,12 @@ function Product(props) {
 
 
                     <Box>
-                        <InputSearch />
+                        <InputSearch onChange={handleSearch} />
                     </Box>
                     <Box sx={{ width: "200px" }}>
-                        <FilterSelect />
+                        <FilterSelect onSortChange={handleSortChange} />
                     </Box>
+
 
 
                 </Box>
@@ -85,8 +91,8 @@ function Product(props) {
 
                         [
                             { title: "Tên Sản Phẩm", field: "name" },
-                            { title: "Giá Cũ", field: "oldPrice" },
-                            { title: "Gía Mới", field: "salePrice" },
+                            { title: "Giá Cũ", field: "origin_price" },
+                            { title: "Gía Mới", field: "sale_price" },
 
                         ]
                     } />
@@ -100,6 +106,7 @@ function Product(props) {
 
             }}>
 
+
                 <PaginationTable sx={{
                     "marginTop": "25px",
                     display: "flex",
@@ -108,6 +115,11 @@ function Product(props) {
 
 
                 }}
+
+                    count={totalPage}
+                    page={filter.page}
+
+                    onChange={handleChangePage}
                 />
 
             </Box>

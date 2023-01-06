@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
@@ -12,8 +13,7 @@ import { customTheme } from './component/CreateTheme';
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import { store } from './app/store'
 import { Provider } from 'react-redux'
-import ProductProvider from './context/ProductProvider';
-import CategoryProvider from './context/CategoryProvider';
+
 
 
 
@@ -31,22 +31,22 @@ root.render(
 
 
         <SnackbarProvider maxSnack={3}>
-          <CategoryProvider>
-            <ProductProvider>
+          {/* <CategoryProvider> */}
 
 
 
-              <ThemeProvider theme={customTheme}>
-                <CssBaseline />
+
+          <ThemeProvider theme={customTheme}>
+            <CssBaseline />
 
 
-                <App />
+            <App />
 
 
-              </ThemeProvider>
-
-            </ProductProvider >
-          </CategoryProvider>
+          </ThemeProvider>
+          {/* <ProductProvider>
+            </ProductProvider > */}
+          {/* </CategoryProvider> */}
         </SnackbarProvider>
 
 

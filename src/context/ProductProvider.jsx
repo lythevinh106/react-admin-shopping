@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 // import AlertModal from '../component/ALertModal/AlertModal';
@@ -16,6 +16,9 @@ import { useDispatch } from 'react-redux';
 
 import { activeMenu } from '../features/progress/progressSlice';
 import FormCreateProduct from '../component/Form/FormCreateProduct/FormCreateProduct';
+import ProductApi from '../ApiServices/ProductApi';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import queryString from 'query-string';
 
 ProductProvider.propTypes = {
 
@@ -26,54 +29,124 @@ export const ProductContext = createContext();
 
 export default function ProductProvider({ children }) {
 
-    const Listproducts = [
-        {
-            id: 1,
-            name: "san pham 1",
-            oldPrice: 5000000,
-            salePrice: 9000000,
-            img: "https://cdn.hoanghamobile.com/i/productlist/ts/Uploads/2022/09/07/image-removebg-preview-10.png"
 
-        },
 
-        {
-            id: 2,
-            name: "san pham 2",
-            description: "nnoi dung san pham 1",
-            oldPrice: 5000000,
-            salePrice: 9000000,
-            img: "https://cdn.hoanghamobile.com/i/productlist/ts/Uploads/2022/07/11/image-removebg-preview-31.png"
 
-        },
-        {
-            id: 3,
-            name: "san pham 3",
-            description: "nnoi dung san pham 1",
-            oldPrice: 5000000,
-            salePrice: 9000000,
-            img: "https://cdn.hoanghamobile.com/i/productlist/ts/Uploads/2022/10/18/image-removebg-preview-53.png"
-        },
-        {
-            id: 4,
-            name: "san pham 4",
-            description: "nnoi dung san pham 1",
-            oldPrice: 5000000,
-            salePrice: 9000000,
-            img: "https://cdn.hoanghamobile.com/i/productlist/ts/Uploads/2022/04/10/image-removebg-preview.png"
-        }
+    const navigate = useNavigate();
+    let [searchParamsProduct, setSearchParamsProduct] = useSearchParams();
+    let location = useLocation();
 
-    ]
 
-    const [isOpenRemove, setIsOpenRemove] = useState(false);
-    const [isAlert, setIsAlert] = useState(false);
-    const [products, setProducts] = useState(Listproducts);
+    const queryParam = queryString.parse(location.search)
+
+    const [query, setQuery] = useState({})
+    // console.log(queryParam);
+
+    const [filter, setFilter] = useState({
+
+
+
+        ...queryParam,
+        page: parseInt(queryParam.page) || 1
+
+
+
+    })
+
+    const [products, setProducts] = useState([]);
+    const [totalPage, setTotalPage] = useState(0);
+
+
+
     const [isDrawer, setIsDrawer] = useState(false);
     const [productUpdate, setProductUpdate] = useState();
-
-
-
+    const [isOpenRemove, setIsOpenRemove] = useState(false);
+    const [isAlert, setIsAlert] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
+
+
+    useEffect(() => {
+
+        (async () => {
+            try {
+
+                const response = await ProductApi.getAllProduct(filter);
+
+                // console.log(response.data);
+                setProducts(response.data)
+
+                setTotalPage(response.last_page)
+
+
+            } catch (error) {
+
+
+            }
+        })();
+
+
+
+    }, [filter]);
+
+    useEffect(() => {
+
+        navigate(location.pathname + "?" + queryString.stringify(filter));
+
+    }, [navigate, filter])
+
+
+
+    const handleChangePage = (e, newPage) => {
+
+
+        setFilter((prev) => {
+            return {
+                ...prev,
+                page: newPage
+
+
+            }
+        })
+    }
+
+
+
+    const handleSortChange = (value) => {
+        console.log(value);
+
+
+        setFilter((prev) => {
+            return {
+                ...prev,
+                sort: value
+
+            }
+        })
+
+
+
+    }
+
+
+    const handleSearch = (e) => {
+
+        let length = e.target.value.trim().length;
+
+
+        setFilter((prev) => {
+            return {
+                ...prev,
+                page: 1,
+                search: e.target.value,
+            }
+        })
+
+
+    }
+
+
+
 
 
     const deleteProduct = (id) => {
@@ -97,17 +170,32 @@ export default function ProductProvider({ children }) {
 
 
 
-    const handleOnYesRemove = (id) => {
+    const handleOnYesRemove = async (id) => {
 
-        const ItemRemove = products.findIndex((product) => product.id === id);
-        let newItems = [...products];
-        newItems.splice(ItemRemove, 1);
+
         // console.log(newItems);
 
-        setProducts(newItems);
-        setIsOpenRemove(false);
+        try {
 
-        enqueueSnackbar('Xóa Sản Phẩm Thành Công', { variant: "success" });
+            const ItemRemove = products.findIndex((product) => product.id === id);
+
+            let newItems = [...products];
+            newItems.splice(ItemRemove, 1);
+            setProducts(newItems);
+            setIsOpenRemove(false);
+            enqueueSnackbar('Xóa sản phẩm thành công.', { variant: "success" });
+            const response = await ProductApi.deleteProduct(id)
+
+
+
+
+        } catch (error) {
+            enqueueSnackbar('Xóa danh mục thất bại.', { variant: "error" });
+        }
+
+
+
+
     }
 
     const handleOnNoRemove = () => {
@@ -124,11 +212,11 @@ export default function ProductProvider({ children }) {
 
         dispatch(activeMenu(true));
         ////doan nay nen gui len provider cua  tuwngf loai
-        setTimeout(() => {
-            console.log(data)
-            dispatch(activeMenu(false));
 
-        }, 3000)
+        console.log(data)
+        dispatch(activeMenu(false));
+
+
 
     }
 
@@ -142,7 +230,18 @@ export default function ProductProvider({ children }) {
             isDrawer,
             setIsDrawer,
             productUpdate,
-            setProductUpdate
+            setProductUpdate,
+            searchParamsProduct,
+            setSearchParamsProduct,
+            handleChangePage,
+            handleSortChange,
+            handleSearch,
+
+
+
+            filter,
+            totalPage
+
 
 
         }}>
