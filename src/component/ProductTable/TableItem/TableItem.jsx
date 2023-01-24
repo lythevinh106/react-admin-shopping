@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import myColor from '../../myColor/myColor';
 
 import { MyButtonRemove, MyButtonSetting } from '../../CustomButton/CustomButton';
+import { status_content } from '../../../until/status_content';
 
 
 
@@ -49,11 +50,19 @@ function TableItem({ item, count, cols, SettingClick = () => { }, RemoveClick = 
                         return (
 
 
-                            <TableCell key={i} align="center" component="th" scope="row" >
+
+                            <TableCell sx={{ maxWidth: "300px" }} key={i} align="center" component="th" scope="row" >
                                 <>
-                                    {item[col.field]}
+
+                                    {
+                                        col.field == "status" ? status_content(item[col.field]) :
+                                            item[col.field]
+
+                                    }
+
                                 </>
                             </TableCell>
+
 
                         )
 

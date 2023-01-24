@@ -7,7 +7,7 @@ InputField.propTypes = {
 
 };
 
-function InputField({ form, name, sx, label, type = "text", control, defaultValue = "", value, onChange = () => { }, ...other }) {
+function InputField({ form, name, sx, label, readOnly = false, type = "text", control, defaultValue = "", value, onChange = () => { }, ...other }) {
     const { register, handleSubmit, watch, getFieldState, formState: { errors } } = form
 
 
@@ -26,6 +26,10 @@ function InputField({ form, name, sx, label, type = "text", control, defaultValu
                 label={label} variant="standard"
                 onChange={(e) => onChange(e)}
                 {...other}
+
+                InputProps={{
+                    readOnly: readOnly,
+                }}
 
 
             />

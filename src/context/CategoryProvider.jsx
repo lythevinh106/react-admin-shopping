@@ -20,6 +20,8 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 import queryString from 'query-string';
 import { Category } from '@mui/icons-material';
 import FormUpdateCategory from '../component/Form/FormUpdateCategory/FormUpdateCategory';
+import { useDispatch } from 'react-redux';
+import { activeMenu } from '../features/progress/progressSlice';
 
 
 
@@ -38,12 +40,13 @@ export default function CategoryProvider({ children }) {
     const [categories, setCategories] = useState([]);
 
     const queryParam = queryString.parse(location.search)
+    const [currentPage, setCurrentPage] = useState(1);
     const [filter, setFilter] = useState({
 
 
 
-        ...queryParam,
-        page: parseInt(queryParam.page) || 1
+
+        // page: parseInt(queryParam.page)
 
 
 
@@ -59,7 +62,7 @@ export default function CategoryProvider({ children }) {
     const [isDrawer, setIsDrawer] = useState(false);
     const [categoryUpdate, setCategoryUpdate] = useState(null);
     const { enqueueSnackbar } = useSnackbar();
-
+    const dispatch = useDispatch();
 
     useEffect(() => {
 
@@ -85,11 +88,11 @@ export default function CategoryProvider({ children }) {
 
 
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        navigate(location.pathname + "?" + queryString.stringify(filter));
+    //     navigate(location.pathname + "?" + queryString.stringify(filter));
 
-    }, [navigate, filter])
+    // }, [navigate, filter])
 
 
 
@@ -104,7 +107,7 @@ export default function CategoryProvider({ children }) {
 
 
     const handleChangePage = (e, newPage) => {
-
+        setCurrentPage(newPage);
 
         setFilter((prev) => {
             return {
@@ -115,7 +118,6 @@ export default function CategoryProvider({ children }) {
             }
         })
     }
-
     const handleSortChange = (value) => {
 
         setFilter((prev) => {
@@ -126,10 +128,7 @@ export default function CategoryProvider({ children }) {
             }
         })
 
-
-
     }
-
 
     const handleSearch = (e) => {
 
@@ -213,7 +212,7 @@ export default function CategoryProvider({ children }) {
 
 
         console.log("data create", data);
-
+        dispatch(activeMenu(true));
         try {
             const newData = {
                 name: data.name,
@@ -228,16 +227,18 @@ export default function CategoryProvider({ children }) {
 
             enqueueSnackbar('Thêm Danh Mục Thành Công.', { variant: "success" });
         } catch (error) {
+            dispatch(activeMenu(false));
             enqueueSnackbar('Thêm Danh Mục Thất Bại.', { variant: "error" });
 
         }
+        dispatch(activeMenu(false));
 
 
     }
 
     const handleOnSubmitUpdate = async (data) => {
 
-
+        dispatch(activeMenu(true));
 
         console.log("update category", data.id);
 
@@ -272,10 +273,10 @@ export default function CategoryProvider({ children }) {
             enqueueSnackbar('Sửa Danh Mục Thành Công.', { variant: "success" });
         } catch (error) {
             enqueueSnackbar('Sủa Danh Mục Thất Bại.', { variant: "error" });
-
+            dispatch(activeMenu(false));
         }
 
-
+        dispatch(activeMenu(false));
     }
 
 
@@ -295,7 +296,7 @@ export default function CategoryProvider({ children }) {
             handleChangePage,
             handleSortChange,
             handleSearch,
-            categoryUpdate, setCategoryUpdate
+            categoryUpdate, setCategoryUpdate, currentPage
 
 
         }}>
@@ -322,10 +323,6 @@ export default function CategoryProvider({ children }) {
                             categoryUpdate={categoryUpdate}
 
                             onSubmitUpdate={handleOnSubmitUpdate} />
-
-
-
-
 
                 }
 

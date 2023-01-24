@@ -19,6 +19,7 @@ import FormCreateProduct from '../component/Form/FormCreateProduct/FormCreatePro
 import ProductApi from '../ApiServices/ProductApi';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import queryString from 'query-string';
+import FormUpdateProduct from '../component/Form/FormUpdateProduct/FormUpdateProduct';
 
 ProductProvider.propTypes = {
 
@@ -46,8 +47,8 @@ export default function ProductProvider({ children }) {
 
 
 
-        ...queryParam,
-        page: parseInt(queryParam.page) || 1
+        // ...queryParam,
+        // page: parseInt(queryParam.page) 
 
 
 
@@ -59,9 +60,10 @@ export default function ProductProvider({ children }) {
 
 
     const [isDrawer, setIsDrawer] = useState(false);
-    const [productUpdate, setProductUpdate] = useState();
+    const [productUpdate, setProductUpdate] = useState(null);
     const [isOpenRemove, setIsOpenRemove] = useState(false);
     const [isAlert, setIsAlert] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
 
@@ -89,17 +91,25 @@ export default function ProductProvider({ children }) {
 
     }, [filter]);
 
+    // useEffect(() => {
+
+    //     navigate(location.pathname + "?" + queryString.stringify(filter));
+
+    // }, [navigate, filter])
+
+
     useEffect(() => {
+        if (isDrawer == true) {
+            setProductUpdate(null);
+        }
 
-        navigate(location.pathname + "?" + queryString.stringify(filter));
 
-    }, [navigate, filter])
-
+    }, [isDrawer])
 
 
     const handleChangePage = (e, newPage) => {
 
-
+        setCurrentPage(newPage);
         setFilter((prev) => {
             return {
                 ...prev,
@@ -115,11 +125,30 @@ export default function ProductProvider({ children }) {
     const handleSortChange = (value) => {
         console.log(value);
 
-
         setFilter((prev) => {
             return {
                 ...prev,
                 sort: value
+
+            }
+        })
+
+
+
+    }
+
+
+
+    const handleFilterCategoryChange = (value) => {
+        // console.log(value);
+
+
+        setFilter((prev) => {
+
+            return {
+                ...prev,
+                page: 1,
+                cat: value
 
             }
         })
@@ -153,7 +182,7 @@ export default function ProductProvider({ children }) {
         setIsOpenRemove(id);
         // handleOnYesRemove(id);
     }
-    const updateProduct = (id) => {
+    const updateProduct = async (id) => {
 
 
         setIsDrawer(true);
@@ -162,7 +191,29 @@ export default function ProductProvider({ children }) {
             return item.id === id;
         })
 
-        setProductUpdate(data)
+        let productImages = []
+
+        try {
+
+            const response = await ProductApi.getAllProductImages(id);
+
+            if (response?.code == 200) {
+                response.data.forEach(image => {
+                    productImages.push(image.name);
+                });
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+        // console.log(productImages);
+        const newData = {
+            ...data,
+            product_images: productImages
+
+        }
+
+        setProductUpdate(newData)
 
 
     }
@@ -208,17 +259,147 @@ export default function ProductProvider({ children }) {
         setIsAlert(false);
     }
 
-    const handleOnSubmit = (data) => {
-
+    const handleOnCreateSubmit = async (data) => {
         dispatch(activeMenu(true));
-        ////doan nay nen gui len provider cua  tuwngf loai
+        const dataRequest = {
+            ...data,
+            name: data.name,
+            title: data.title,
+            origin_price: data.origin_price,
+            sale_price: data.sale_price,
+            category_id: Number(data.category_id),
+            description: data.description
 
-        console.log(data)
+        }
+
+
+        console.log(dataRequest)
+
+        try {
+
+            const response = await ProductApi.addProduct(dataRequest);
+            // const responseData = await response.data;
+
+            if (response.original.status == 200) {
+                enqueueSnackbar('Thêm sản phẩm thành công.', { variant: "success" });
+
+                const dataResponse = response?.original?.data;
+
+                setProducts((prev) => {
+
+                    return [
+                        dataResponse,
+                        ...prev
+
+                    ]
+
+                })
+                console.log(dataResponse);
+
+
+
+
+            } else {
+                enqueueSnackbar(`Thêm sản phẩm thất bại. ${response?.original?.message} `, { variant: "error" });
+
+            }
+
+
+
+
+
+
+
+        } catch (error) {
+
+            enqueueSnackbar('Thêm sản phẩm thất bại.', { variant: "error" });
+            dispatch(activeMenu(false));
+            throw new Error(error.message);
+
+        }
+
+
+
+
         dispatch(activeMenu(false));
 
 
+    }
+
+
+
+    const handleOnUpdateSubmit = async (data) => {
+
+        // return;
+
+        dispatch(activeMenu(true));
+        const dataRequest = {
+            ...data,
+            name: data.name,
+            title: data.title,
+            origin_price: data.origin_price,
+            sale_price: data.sale_price,
+            category_id: Number(data.category_id),
+            description: data.description
+
+        }
+
+        if (data.product_images.length <= 0) {
+            delete dataRequest.product_images
+        }
+        if (data.image.length <= 0) {
+            delete dataRequest.image
+        }
+
+
+
+
+        // console.log(dataRequest)
+
+        try {
+
+            const response = await ProductApi.updateProduct(data.id, dataRequest);
+            // const responseData = await response.data;
+
+            if (response.original.status == 200) {
+                enqueueSnackbar('Cập nhật sản phẩm thành công.', { variant: "success" });
+
+                const dataResponse = response?.original?.data;
+
+
+                const findProductId = products.findIndex((product) => product.id == data.id);
+
+                products[findProductId] = {
+                    ...dataResponse
+                }
+                console.log(dataResponse);
+
+
+
+
+            } else {
+                enqueueSnackbar(`Cập nhật sản phẩm thất bại. ${response?.original?.message} `, { variant: "error" });
+
+            }
+
+
+        } catch (error) {
+
+            enqueueSnackbar('Thêm sản phẩm thất bại.', { variant: "error" });
+            throw new Error(error.message);
+            dispatch(activeMenu(false));
+        }
+
+
+
+
+        dispatch(activeMenu(false));
+
 
     }
+
+
+
 
 
     return (
@@ -236,6 +417,8 @@ export default function ProductProvider({ children }) {
             handleChangePage,
             handleSortChange,
             handleSearch,
+            handleFilterCategoryChange,
+            currentPage,
 
 
 
@@ -254,11 +437,31 @@ export default function ProductProvider({ children }) {
                     setIsOpenRemove(false)
                 }} /> : <></>
             }
+
+
+            {/* {console.log()} */}
             <DrawerMainProduct
-                component={<DrawerCreate component={<FormCreateProduct
-                    productUpdate={productUpdate}
-                    onSubmit={handleOnSubmit} />} />}
+                component={<DrawerCreate
+
+
+                    component={
+                        productUpdate == null ?
+                            <FormCreateProduct
+
+                                onSubmit={handleOnCreateSubmit} />
+                            :
+                            <FormUpdateProduct
+                                productUpdate={productUpdate}
+                                onSubmit={handleOnUpdateSubmit} />
+
+
+
+                    } />}
             />
+
+
+
+
 
 
 

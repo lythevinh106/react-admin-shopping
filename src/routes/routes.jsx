@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Home from './../component/pages/home/Home';
+
 import Product from '../component/pages/Product/Product';
+import Home from '../component/pages/Home/Home';
 import Category from '../component/pages/Category/Category';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -13,7 +14,7 @@ export const publicRoutes = [
     {
         path: "/",
         element: Home,
-        name: "DashBoard",
+        name: "Đơn Hàng",
         icon: DashboardIcon
 
 

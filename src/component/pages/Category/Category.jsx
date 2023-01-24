@@ -32,7 +32,8 @@ function Category(props) {
         handleSearch,
         setIsDrawer,
         categoryUpdate,
-        setCategoryUpdate
+        setCategoryUpdate,
+        currentPage
     } = useContext(CategoryContext);
 
     return (
@@ -120,7 +121,7 @@ function Category(props) {
                 }}
 
                     count={totalPage}
-                    page={filter.page}
+                    page={currentPage}
 
                     onChange={handleChangePage}
                 />

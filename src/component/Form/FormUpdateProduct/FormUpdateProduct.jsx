@@ -6,7 +6,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import { Box, Button, FormHelperText, ImageList, ImageListItem, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, FormHelperText, ImageList, ImageListItem, InputLabel, MenuItem, NativeSelect, Select, Stack, TextField, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
@@ -18,16 +18,9 @@ import CategoryApi from '../../../ApiServices/CategoryApi';
 
 const schema = yup.object({
     name: string().required("trường này không được bỏ trống").min(3, `Tối thiểu Có 3 kí tự`),
-    category_id: string().required("trường này không được bỏ trống"),
+    category_id: number().required("trường này không được bỏ trống"),
     title: string().required("trường này không được bỏ trống").min(3, `Tối thiểu Có 3 kí tự`),
-    image: yup.mixed().test("required", "vui lòng chọn ảnh", value => {
-        if (value.length > 0 || value) {
-            return true
-        }
-    }),
-    product_images: yup.mixed().test("required", "vui lòng chọn ảnh", value => {
-        return value && value.length;
-    }),
+
     origin_price: number()
         .typeError("dữ liệu phải là kiểu số")
         .max(1000000000, 'Tối da là 1.000.000.000')
@@ -53,21 +46,27 @@ const schema = yup.object({
 
 
 
-function FormCreateProduct({ onSubmit }) {
+function FormUpdateProduct({ productUpdate = {}, onSubmit }) {
 
-
+    // console.log(productUpdate.category_id);
 
     const [category, setCategory] = React.useState('');
     const [active, setActive] = React.useState(1);
-    const [categoryId, setCategoryId] = React.useState("");
+    const [categoryId, setCategoryId] = React.useState(productUpdate.category_id);
+
     const [image, setImage] = React.useState("");
-    const [productImages, setProductImages] = React.useState("");
+    const [productImages, setProductImages] = React.useState([]);
 
     const handleChange = (event) => {
         setCategory(event.target.value);
     };
 
+    // console.log(productUpdate);
 
+
+    useEffect(() => {
+        setCategoryId(productUpdate.category_id)
+    }, [productUpdate])
 
 
     useEffect(() => {
@@ -93,16 +92,18 @@ function FormCreateProduct({ onSubmit }) {
         defaultValues:
         {
 
-            name: "",
-            title: "",
-            origin_price: "",
-            new_price: "",
-            category_id: "",
-            description: "",
-            image: "",
-            product_images: "",
-            active: 1
+            name: productUpdate?.name,
+            title: productUpdate?.title,
+            origin_price: productUpdate?.origin_price,
+            sale_price: productUpdate?.sale_price,
+            category_id: category || productUpdate?.category_id
+            ,
+            description: productUpdate?.description,
 
+            active: productUpdate?.active,
+            id: productUpdate?.id,
+            product_images: "",
+            image: "",
 
 
 
@@ -112,9 +113,11 @@ function FormCreateProduct({ onSubmit }) {
 
     const { register, handleSubmit, watch, formState: { errors } } = form
 
-    // console.log(errors)
+    //  console.log(errors)
 
     const handleOnSubmit = data => {
+        // console.log(data.id);
+        // console.log("data dc update", data)
         onSubmit(data)
     };
 
@@ -126,11 +129,13 @@ function FormCreateProduct({ onSubmit }) {
 
 
     const handleChangeCategoryId = (e) => {
+        // console.log(e.target.value);
         setCategoryId(e.target.value);
+        form.setValue("category_id", e.target.value);
     }
 
     const handleImageOnChange = (event) => {
-
+        // console.log(event.target.files[0]);
 
         setImage(URL.createObjectURL(event.target.files[0]));
         form.setValue('image', event.target.files[0]);
@@ -145,7 +150,7 @@ function FormCreateProduct({ onSubmit }) {
         let files = [];
 
         for (let file of event.target.files) {
-
+            // console.log(file)
             files.push(file);
             let url = URL.createObjectURL(file);
             allUrl.push(url);
@@ -161,7 +166,7 @@ function FormCreateProduct({ onSubmit }) {
         setProductImages(allUrl);
     }
 
-
+    // console.log(image);
     return (
         <form onSubmit={handleSubmit(handleOnSubmit)}>
             <Box sx={{
@@ -169,7 +174,7 @@ function FormCreateProduct({ onSubmit }) {
 
             }}>
                 <Typography variant='h5' sx={{ color: myColor.greenDefault, padding: "5px 0px ", fontWeight: "bold", textAlign: "center", margin: "10px 0" }}>
-                    Thêm Mới Sản Phẩm
+                    Cập Nhât Sản Phẩm
                 </Typography>
 
                 <Box sx={{
@@ -193,7 +198,10 @@ function FormCreateProduct({ onSubmit }) {
 
                         <Button variant="contained" component="label">
                             Upload Ảnh Chính
-                            <input hidden accept="image/*" type="file"
+                            <input style={{
+
+                                height: "auto"
+                            }} hidden accept="image/*" type="file"
 
                                 {...register("image")}
 
@@ -204,13 +212,14 @@ function FormCreateProduct({ onSubmit }) {
 
                             {errors?.image?.message}</Typography>
                         <Box sx={{
-                            width: "90%",
+                            width: "200px",
                             height: "auto"
                         }}>
                             <img style={{
-                                width: "auto",
-                                height: "220px"
-                            }} src={image || " "} alt="" />
+                                width: "100%",
+                                height: "auto",
+                                object: "cover"
+                            }} src={image || productUpdate?.image} alt="" />
 
 
 
@@ -234,21 +243,44 @@ function FormCreateProduct({ onSubmit }) {
                         </Button>
                         <Typography color="#D32F2F"  >
 
-                            {errors?.product_images?.message}</Typography>
+                            {/* {errors?.product_images?.message} */}
+
+                        </Typography>
 
                         <ImageList sx={{ width: 500, height: 450 }} cols={3} rowHeight={164}>
-                            {productImages.length > 0 && productImages.map((item, index) => (
-                                <ImageListItem key={index}>
-                                    <img
-                                        src={item}
-                                        srcSet={item}
-                                        alt={item}
-                                        loading="lazy"
-                                    />
-                                </ImageListItem>
-                            )
 
-                            )}
+
+                            {productImages.length <= 0 ?
+
+                                productUpdate?.product_images?.map((item, index) => (
+                                    <ImageListItem key={index}>
+                                        <img
+                                            src={item}
+                                            srcSet={item}
+                                            alt={item}
+                                            loading="lazy"
+                                        />
+                                    </ImageListItem>
+                                )
+
+                                ) :
+
+                                productImages.map((item, index) => (
+                                    <ImageListItem key={index}>
+                                        <img
+                                            src={item}
+                                            srcSet={item}
+                                            alt={item}
+                                            loading="lazy"
+                                        />
+                                    </ImageListItem>
+                                )
+
+                                )
+
+
+
+                            }
                         </ImageList>
 
 
@@ -258,7 +290,7 @@ function FormCreateProduct({ onSubmit }) {
 
 
 
-
+                    {/* {console.log(category[0]?.id)} */}
 
                     <FormControl
 
@@ -268,31 +300,47 @@ function FormCreateProduct({ onSubmit }) {
                         sx={{
                             marginTop: "35px"
                         }}>
-                        <InputLabel id="demo-simple-select-label">Chọn Danh Mục</InputLabel>
-                        <Select
+
+
+                        <Typography fontSize={14} color="primary" variant="standard" htmlFor="uncontrolled-native">Danh Mục Cho Sản Phẩm</Typography>
+
+
+
+
+
+                        <NativeSelect
+
                             {...register("category_id")}
-
-                            labelId="demo-simple-select-error-label"
-                            id="demo-simple-select-error"
-
-                            value={categoryId}
-
-                            variant="standard"
-                            fullWidth
-                            label="Chọn Danh Mục Cho Sản Phẩm Của Bạn"
                             onChange={handleChangeCategoryId}
+                            value={categoryId}
+                            inputProps={{
+                                name: 'category_id',
+                                id: 'uncontrolled-native',
+                                label: "Chọn danh mục"
+
+                            }}
                         >
+
                             {category && (
                                 category.map((cat) => {
 
 
                                     return (
-                                        <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+
                                     )
                                 })
                             )}
 
-                        </Select>
+
+                        </NativeSelect>
+
+
+
+
+
+
+
                         <FormHelperText>{errors?.category_id?.message}</FormHelperText>
                     </FormControl>
 
@@ -328,7 +376,7 @@ function FormCreateProduct({ onSubmit }) {
                             backgroundColor: myColor.greenDefault,
                         }
                     }} >
-                        Thêm Mới Sản Phẩm
+                        Cập Nhât Sản Phẩm
 
 
                     </Button></Box>
@@ -342,4 +390,4 @@ function FormCreateProduct({ onSubmit }) {
     );
 }
 
-export default FormCreateProduct;
+export default FormUpdateProduct;

@@ -19,11 +19,7 @@ function DefaultLayout({ children }) {
         <CategoryProvider>
             <ProductProvider>
 
-
-
                 <Stack className="dashboard-main-wrapper" direction='column'>
-
-
 
                     <Box className="dashboard-header" sx={{
                         position: "fixed",
@@ -59,13 +55,6 @@ function DefaultLayout({ children }) {
                             </Box>
                         </Stack>
                     </Box>
-
-
-
-
-
-
-
 
 
                 </Stack>

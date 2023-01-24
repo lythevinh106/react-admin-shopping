@@ -13,6 +13,7 @@ import { Filter } from '@mui/icons-material';
 import FilterSelect from '../../FilterSelect/FilterSelect';
 import myColor from '../../myColor/myColor';
 import { ButtonAddNew } from '../../CustomButton/CustomButton';
+import FilterCategory from '../../FilterCategory/FilterCategory';
 
 Product.propTypes = {
 
@@ -27,8 +28,9 @@ function Product(props) {
         totalPage,
         handleChangePage,
         handleSortChange,
-        handleSearch
-        , setProductUpdate, setIsDrawer
+        handleSearch,
+        currentPage
+        , setProductUpdate, setIsDrawer, handleFilterCategoryChange
     } = useContext(ProductContext);
 
     return (
@@ -59,6 +61,7 @@ function Product(props) {
                         <ButtonAddNew onClick={() => {
                             setIsDrawer(true)
                             setProductUpdate(null)
+
                         }}> Thêm Sản Phẩm </ButtonAddNew>
                     </Box>
 
@@ -79,6 +82,11 @@ function Product(props) {
                     <Box>
                         <InputSearch onChange={handleSearch} />
                     </Box>
+
+                    <Box sx={{ width: "200px" }}>
+
+                        <FilterCategory onFilterCatChange={handleFilterCategoryChange} />
+                    </Box>
                     <Box sx={{ width: "200px" }}>
                         <FilterSelect onSortChange={handleSortChange} />
                     </Box>
@@ -92,7 +100,7 @@ function Product(props) {
                         [
                             { title: "Tên Sản Phẩm", field: "name" },
                             { title: "Giá Cũ", field: "origin_price" },
-                            { title: "Gía Mới", field: "sale_price" },
+                            { title: "Giá Mới", field: "sale_price" },
 
                         ]
                     } />
@@ -117,7 +125,7 @@ function Product(props) {
                 }}
 
                     count={totalPage}
-                    page={filter.page}
+                    page={currentPage}
 
                     onChange={handleChangePage}
                 />

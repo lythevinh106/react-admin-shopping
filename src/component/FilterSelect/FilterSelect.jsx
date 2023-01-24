@@ -25,7 +25,7 @@ function FilterSelect({ onSortChange = () => { } }) {
 
     const handleChange = (event) => {
         setSortCategory(event.target.value);
-        onSortChange(sortCategory)
+        onSortChange(event.target.value)
     };
 
     return (

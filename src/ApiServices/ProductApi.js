@@ -30,17 +30,43 @@ const ProductApi = {
 
 
     },
-    // deleteCategory(id) {
+    addProduct(data) {
 
-    //     return AxiosAdmin.delete(`/category/${id}`, {
+        return AxiosAdmin.post(`/product`, data,
+            { headers: { 'content-type': 'multipart/form-data; boundary=<calculated when request is sent>' } }
+        )
+        // .catch(function (error) {
+        //     console.log(error.toJSON());
+        // });;
 
 
 
-    //     });
+
+
+    },
+
+
+    updateProduct(id, data) {
+
+        return AxiosAdmin.post(`/product/edit/${id}`, data,
+            { headers: { 'content-type': 'multipart/form-data; boundary=<calculated when request is sent>' } }
+        )
+        // .catch(function (error) {
+        //     console.log(error.toJSON());
+        // });;
 
 
 
-    // },
+
+
+    },
+
+    getAllProductImages(id) {
+        return AxiosAdmin.get(`/productImages/${id}`, {
+
+        });
+    },
+
 
 
 

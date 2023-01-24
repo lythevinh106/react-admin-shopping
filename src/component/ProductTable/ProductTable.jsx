@@ -14,6 +14,7 @@ import myColor from '../myColor/myColor';
 import TableItem from './TableItem/TableItem';
 import ProductTableItem from './ProductTableItem/ProductTableItem';
 import CategoryTableItem from './CategoryTableItem/CategoryTableItem';
+import OrderTableItem from './OrderTableItem/OrderTableItem';
 
 
 
@@ -72,6 +73,11 @@ function ProductTable({ data, cols, type = "product" }) {
                                 case "category": {
                                     return (
                                         <CategoryTableItem key={item.id} item={item} count={i} cols={cols} />)
+
+                                }
+                                case "order": {
+                                    return (
+                                        <OrderTableItem key={item.id} item={item} count={i} cols={cols} />)
 
                                 }
                                 default: {
