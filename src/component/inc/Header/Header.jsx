@@ -50,7 +50,7 @@ function Header(props) {
 
                                 sx={{
                                     fontWeight: "bold"
-                                }} variant='h4'>HALO SHOP</Typography>
+                                }} variant='h6'>HALO SHOP</Typography>
 
                         </Grid>
                         <Grid item lg={8} sx={
