@@ -194,7 +194,7 @@ function Home(props) {
                 <Box>
 
 
-                    <TypoTitleContent>Quản Lí Sản Phẩm</TypoTitleContent>
+                    <TypoTitleContent>Quản Lí Đơn Hàng</TypoTitleContent>
 
 
                     <Box
