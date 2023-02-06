@@ -47,7 +47,7 @@ function Category(props) {
             <Box>
 
 
-                <TypoTitleContent>Quản Lí Fanh Mục</TypoTitleContent>
+                <TypoTitleContent>Quản Lí Danh Mục</TypoTitleContent>
 
 
                 <Box
