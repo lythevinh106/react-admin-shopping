@@ -42,6 +42,23 @@ const OrderApi = {
     },
 
 
+    showNofi() {
+        return AxiosAdmin.get("/showNofi");
+    },
+
+    updateNofi() {
+
+        return AxiosAdmin.get("/updateNofi");
+    },
+
+    checkOrder(order_token) {
+
+        return AxiosAdmin.post(`/order/checkToken/` + order_token);
+
+    },
+
+
+
 
 
 

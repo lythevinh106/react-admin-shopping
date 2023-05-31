@@ -21,6 +21,8 @@ import FormUpdateOrder from '../../Form/FormUpdateOrder/FormUpdateOrder';
 import { useSnackbar } from 'notistack';
 import ModalMain from '../../ModalComp/ModalMain';
 import ModalRemove from '../../ModalComp/ModalRemove/ModalRemove';
+import { useParams, useSearchParams } from 'react-router-dom';
+import OrderApi from '../../../ApiServices/OrderApi';
 
 
 Home.propTypes = {
@@ -40,14 +42,50 @@ function Home(props) {
 
     const filter = useSelector((state) => state.order.filter)
 
-
-
-
+    let [searchParams, setSearchParams] = useSearchParams();
+    // let [orderToken, setOrderToken] = useState(searchParams.get("order_token") || "");
 
     const isOpenUpdateForm = useSelector(state => state.order.isOpenUpdateForm);
     const isOpenDeleteForm = useSelector(state => state.order.isOpenDeleteForm);
 
 
+
+
+    useEffect(() => {
+
+        if (searchParams.get("order_token")) {
+            // console.log(searchParams.get("order_token"));
+
+            (async () => {
+                dispatch(activeMenu(true));
+
+                try {
+
+                    const response = await dispatch(fetchListOrder({
+                        search: searchParams.get("order_token")
+                    }))
+                    dispatch(activeMenu(false));
+
+                } catch (error) {
+                    dispatch(activeMenu(false));
+                }
+
+            })();
+
+        } else {
+            (async () => {
+                const response = await dispatch(fetchListOrder({
+                    ...filter,
+                }))
+
+            })();
+        }
+
+        // (async () => {
+
+        // })()
+
+    }, [searchParams])
 
     useEffect(() => {
 
@@ -58,6 +96,7 @@ function Home(props) {
 
 
     }, [filter, isOpenDeleteForm])
+
 
 
     // console.log(listOrder);

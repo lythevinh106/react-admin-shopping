@@ -53,7 +53,7 @@ root.render(
 
       </Provider>
     </BrowserRouter>
-  </GlobalStyles >
+  </GlobalStyles>
   // </React.StrictMode >
 );
 
